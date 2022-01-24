@@ -42,6 +42,7 @@
 #define DISTANCE_CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a6"
 
 #define LED 23
+#define BUTTON_UP 34
 
 
 //Defines of tft lcd 1.8" screen
@@ -50,6 +51,13 @@
 #define TFT_DC          13
 #define TFT_MOSI        23  // Data out
 #define TFT_SCLK        18  // Clock out
+
+//Timer 0 variables
+
+volatile uint32_t interruptCounter;
+
+hw_timer_t * timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 
 volatile unsigned long elapsedTimeInMicroseconds = 0;
@@ -68,6 +76,33 @@ BluetoothA2DPSink a2dp_sink;
 
 
 
+/*
+ *As with any interrupt, it is best to place the code executed by the Timer in the internal RAM of the ESP32
+ * which is much faster than the Flash memory of the development board.
+ *
+ * 
+ * To do this, simply place the IRAM_ATTR attribute just before the name of the function like this
+ */
+
+void IRAM_ATTR  onTimer(){
+  static uint8_t bool_test = 0;
+
+  if (bool_test == 0){
+    bool_test = 1;
+    digitalWrite(32, HIGH);
+  }else{
+    bool_test = 0;
+    digitalWrite(32, LOW);
+  }
+
+  // Increment the counter and set the time of ISR
+  portENTER_CRITICAL_ISR(&timerMux);
+  interruptCounter++;
+  portEXIT_CRITICAL_ISR(&timerMux);
+  // Give a semaphore that we can check in the loop
+  //xSemaphoreGiveFromISR(timerSemaphore, NULL);
+  // It is safe to use digitalRead/Write here if you want to toggle an output
+}
 
 
 
@@ -265,6 +300,26 @@ void setup() {
   Serial.println("Starting BLE!");
   //Serial.println("Initializing device");
 
+
+  /*
+  * Timer Setup
+  * url: https://diyprojects.io/esp32-timers-alarms-interrupts-arduino-code/#.Ye7bT_7MK3A
+  */
+
+  //Timer 0
+  //Prescaler 80 (80,000,000 / 80 = 1,000,000 tics / sec =>  1usec)
+  //True -> trigger by edge
+  timer = timerBegin(0, 80, true);
+
+  //timer just configured 
+  //function to execute
+  //by edge = true
+  timerAttachInterrupt(timer, &onTimer, true);
+
+  //Program interrupt with the timer every 1000 * 1usg = 1msg
+  timerAlarmWrite(timer, 1000, true);
+  timerAlarmEnable(timer);
+
   /*
      LCD TFT 1.8 SETUP
   */
@@ -372,6 +427,11 @@ void setup() {
   Serial.println("Char defined! Now you can read it in your phone!");
   pinMode (LED, OUTPUT); // Set the LED pin as OUTPUT
 
+  //Switch inputs pullup
+  pinMode (BUTTON_UP, INPUT); // Set the LED pin as OUTPUT
+
+  pinMode (32, OUTPUT); // Set the LED pin as OUTPUT
+
 
 
     //TEST ZONE
@@ -470,6 +530,9 @@ void setup() {
 }
 
 void loop() {
+  if(digitalRead(BUTTON_UP) != LOW){
+    Serial.println("UP pressed...");
+  }
 }
 
 
