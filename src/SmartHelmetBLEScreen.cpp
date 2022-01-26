@@ -514,6 +514,24 @@ void loop() {
   if (Motor_Button(but_center)){
     Serial.println("CENTER pressed...");
   }
+  /*
+  if (digitalRead(BUTTON_UP) != LOW){
+    Serial.println("UP pressed...");
+  }
+  if (digitalRead(BUTTON_LEFT) != LOW){
+    Serial.println("LEFT pressed...");
+  }
+  if (digitalRead(BUTTON_RIGHT) != LOW){
+    Serial.println("RIGHT pressed...");
+  }
+  if (digitalRead(BUTTON_LOW) != LOW){
+    Serial.println("LOW pressed...");
+  }
+  if (digitalRead(BUTTON_CENTER) != LOW){
+    Serial.println("CENTER pressed...");
+  }*/
+
+
 
   /*if(but_up->status_machine == 1){
     Serial.println("Status 1...");

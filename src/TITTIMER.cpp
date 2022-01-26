@@ -58,13 +58,13 @@ void RSI_Timer0 (void) {
 void IRAM_ATTR  onTimer(){
     static uint8_t bool_test = 0;
 
-    if (bool_test == 0){
+    /*if (bool_test == 0){
         bool_test = 1;
         digitalWrite(32, HIGH);
     }else{
         bool_test = 0;
         digitalWrite(32, LOW);
-    }
+    }*/
     // Increment the counter and set the time of ISR
     portENTER_CRITICAL_ISR(&timerMux);
     h_Tics++;
