@@ -30,7 +30,8 @@
 #include "distanceRemaining.h"
 #include <Adafruit_I2CDevice.h>
 #include "BluetoothA2DPSink.h"
-
+#include "TITTIMER.h"
+#include "SwButton.h"
 
 //Defines of UUID's BLE
 // See the following for generating UUIDs:
@@ -42,7 +43,7 @@
 #define DISTANCE_CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a6"
 
 #define LED 23
-#define BUTTON_UP 34
+
 
 
 //Defines of tft lcd 1.8" screen
@@ -52,13 +53,11 @@
 #define TFT_MOSI        23  // Data out
 #define TFT_SCLK        18  // Clock out
 
-//Timer 0 variables
+//bUTTONS INIT
+Button * but_up, *but_low, *but_left, *but_right, *but_center;
 
-volatile uint32_t interruptCounter;
-
-hw_timer_t * timer = NULL;
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
-
+//Timer variables
+static unsigned char TimerTeclat;
 
 volatile unsigned long elapsedTimeInMicroseconds = 0;
 int firstBLEWrite = 0, firstBLENameStreet = 0, firstSpeedLim = 0;
@@ -73,36 +72,6 @@ static int clear_remain_meters = 0;
 int come_from_disconnect_speed_limiter = 0;
 
 BluetoothA2DPSink a2dp_sink;
-
-
-
-/*
- *As with any interrupt, it is best to place the code executed by the Timer in the internal RAM of the ESP32
- * which is much faster than the Flash memory of the development board.
- *
- * 
- * To do this, simply place the IRAM_ATTR attribute just before the name of the function like this
- */
-
-void IRAM_ATTR  onTimer(){
-  static uint8_t bool_test = 0;
-
-  if (bool_test == 0){
-    bool_test = 1;
-    digitalWrite(32, HIGH);
-  }else{
-    bool_test = 0;
-    digitalWrite(32, LOW);
-  }
-
-  // Increment the counter and set the time of ISR
-  portENTER_CRITICAL_ISR(&timerMux);
-  interruptCounter++;
-  portEXIT_CRITICAL_ISR(&timerMux);
-  // Give a semaphore that we can check in the loop
-  //xSemaphoreGiveFromISR(timerSemaphore, NULL);
-  // It is safe to use digitalRead/Write here if you want to toggle an output
-}
 
 
 
@@ -301,24 +270,6 @@ void setup() {
   //Serial.println("Initializing device");
 
 
-  /*
-  * Timer Setup
-  * url: https://diyprojects.io/esp32-timers-alarms-interrupts-arduino-code/#.Ye7bT_7MK3A
-  */
-
-  //Timer 0
-  //Prescaler 80 (80,000,000 / 80 = 1,000,000 tics / sec =>  1usec)
-  //True -> trigger by edge
-  timer = timerBegin(0, 80, true);
-
-  //timer just configured 
-  //function to execute
-  //by edge = true
-  timerAttachInterrupt(timer, &onTimer, true);
-
-  //Program interrupt with the timer every 1000 * 1usg = 1msg
-  timerAlarmWrite(timer, 1000, true);
-  timerAlarmEnable(timer);
 
   /*
      LCD TFT 1.8 SETUP
@@ -429,11 +380,29 @@ void setup() {
 
   //Switch inputs pullup
   pinMode (BUTTON_UP, INPUT); // Set the LED pin as OUTPUT
+  pinMode (BUTTON_LOW, INPUT); 
+  pinMode (BUTTON_LEFT, INPUT); 
+  pinMode (BUTTON_RIGHT, INPUT); 
+  pinMode (BUTTON_CENTER, INPUT); 
 
   pinMode (32, OUTPUT); // Set the LED pin as OUTPUT
 
 
 
+  //Timer init
+  TiInit();
+  //TimerTeclat = TiGetTimer();
+  //TiResetTics(TimerTeclat);
+
+
+
+  //BUTTONS CREATE
+  
+  but_up = Button_Create(BUTTON_UP);
+  but_low = Button_Create(BUTTON_LOW);
+  but_left = Button_Create(BUTTON_LEFT);
+  but_right = Button_Create(BUTTON_RIGHT);
+  but_center = Button_Create(BUTTON_CENTER);
     //TEST ZONE
 
     //Test of setspeedlimitcircle
@@ -530,9 +499,31 @@ void setup() {
 }
 
 void loop() {
-  if(digitalRead(BUTTON_UP) != LOW){
+  if (Motor_Button(but_up)){
     Serial.println("UP pressed...");
   }
+  if (Motor_Button(but_left)){
+    Serial.println("LEFT pressed...");
+  }
+  if (Motor_Button(but_right)){
+    Serial.println("RIGHT pressed...");
+  }
+  if (Motor_Button(but_low)){
+    Serial.println("LOW pressed...");
+  }
+  if (Motor_Button(but_center)){
+    Serial.println("CENTER pressed...");
+  }
+
+  /*if(but_up->status_machine == 1){
+    Serial.println("Status 1...");
+  }
+  if(but_up->status_machine == 2){
+    Serial.println("Status 2...");
+  }
+  if(digitalRead(BUTTON_UP) != LOW){
+    //Serial.println("up jeje...");
+  }*/
 }
 
 
