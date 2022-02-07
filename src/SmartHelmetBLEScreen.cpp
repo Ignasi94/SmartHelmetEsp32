@@ -32,6 +32,7 @@
 #include "BluetoothA2DPSink.h"
 #include "TITTIMER.h"
 #include "SwButton.h"
+#include "Windows.h"
 
 //Defines of UUID's BLE
 // See the following for generating UUIDs:
@@ -55,6 +56,7 @@
 
 //bUTTONS INIT
 Button * but_up, *but_low, *but_left, *but_right, *but_center;
+Window * window;
 
 //Timer variables
 static unsigned char TimerTeclat;
@@ -403,6 +405,10 @@ void setup() {
   but_left = Button_Create(BUTTON_LEFT);
   but_right = Button_Create(BUTTON_RIGHT);
   but_center = Button_Create(BUTTON_CENTER);
+
+
+  //Windows create
+  window = WINDOW_Create();
     //TEST ZONE
 
     //Test of setspeedlimitcircle
@@ -502,18 +508,47 @@ void loop() {
   if (Motor_Button(but_up)){
     Serial.println("UP pressed...");
   }
+
+  /*
   if (Motor_Button(but_left)){
     Serial.println("LEFT pressed...");
   }
   if (Motor_Button(but_right)){
     Serial.println("RIGHT pressed...");
-  }
+  }*/
   if (Motor_Button(but_low)){
     Serial.println("LOW pressed...");
   }
   if (Motor_Button(but_center)){
     Serial.println("CENTER pressed...");
   }
+
+
+  if (Motor_WINDOW_SELECT(window, Motor_Button(but_left), Motor_Button(but_right))){
+    Serial.println("Window changed...");
+    switch (window->status_machine)
+    {
+      case WINDOW_NAVIGATION:
+          Serial.println("Window navigation...");
+          break;
+
+      case WINDOW_BRIGHT:
+          Serial.println("Window bright...");
+          break;
+
+      case WINDOW_DISPLAY:
+          Serial.println("Window display...");
+          break;
+      
+      case WINDOW_VOLUMEN:
+          Serial.println("Window volumen...");
+          break;
+      default:
+          break;
+    }
+    
+  }
+
   /*
   if (digitalRead(BUTTON_UP) != LOW){
     Serial.println("UP pressed...");
