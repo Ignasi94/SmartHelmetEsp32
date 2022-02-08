@@ -89,7 +89,7 @@ bool Motor_WINDOW_SELECT(Window * me, bool left_pressed, bool right_pressed){
     {
         case WINDOW_NAVIGATION:
 
-            if (left_pressed){
+            if (right_pressed){
                 me->status_machine = WINDOW_BRIGHT;
             }
             

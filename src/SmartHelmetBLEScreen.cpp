@@ -33,6 +33,7 @@
 #include "TITTIMER.h"
 #include "SwButton.h"
 #include "Windows.h"
+#include "BrightControl.h"
 
 //Defines of UUID's BLE
 // See the following for generating UUIDs:
@@ -57,6 +58,7 @@
 //bUTTONS INIT
 Button * but_up, *but_low, *but_left, *but_right, *but_center;
 Window * window;
+Bright * bright;
 
 //Timer variables
 static unsigned char TimerTeclat;
@@ -409,6 +411,13 @@ void setup() {
 
   //Windows create
   window = WINDOW_Create();
+    
+    
+  //Bright Control create
+  bright = Bright_Create();
+
+    
+    
     //TEST ZONE
 
     //Test of setspeedlimitcircle
@@ -505,23 +514,25 @@ void setup() {
 }
 
 void loop() {
+  /*
   if (Motor_Button(but_up)){
     Serial.println("UP pressed...");
   }
 
-  /*
+  
   if (Motor_Button(but_left)){
     Serial.println("LEFT pressed...");
   }
   if (Motor_Button(but_right)){
     Serial.println("RIGHT pressed...");
-  }*/
+  }
   if (Motor_Button(but_low)){
     Serial.println("LOW pressed...");
   }
   if (Motor_Button(but_center)){
     Serial.println("CENTER pressed...");
   }
+  */
 
 
   if (Motor_WINDOW_SELECT(window, Motor_Button(but_left), Motor_Button(but_right))){
@@ -534,6 +545,11 @@ void loop() {
 
       case WINDOW_BRIGHT:
           Serial.println("Window bright...");
+          Motor_Bright_Control(bright, Motor_Button(but_up), Motor_Button(but_low), Motor_Button(but_center));
+          if(bright->changed){
+            Serial.println("Bright changed... :");
+            Serial.println(bright->bright_percent);
+          }
           break;
 
       case WINDOW_DISPLAY:
