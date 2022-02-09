@@ -14,7 +14,8 @@
 * @Return: Return the actual percent bright.
 *
 ************************************************/
-uint8_t getPercentBright(const Bright* const me){
+uint8_t getPercentBright(const Bright* const me)
+{
 
     return me->bright_percent;
 
@@ -29,7 +30,8 @@ uint8_t getPercentBright(const Bright* const me){
 * @Return: -
 *
 ************************************************/
-void Bright_Destroy(Bright* const me) { 
+void Bright_Destroy(Bright* const me)
+{ 
 
     free(me);
 
@@ -44,7 +46,8 @@ void Bright_Destroy(Bright* const me) {
 * @Return: -
 *
 ************************************************/
-void Bright_init(Bright* const me) {
+void Bright_init(Bright* const me)
+{
 
     me->automatic = false;
     me->bright_percent = PERCENT_50;
@@ -63,7 +66,8 @@ void Bright_init(Bright* const me) {
 * @Return: Return object created and initialized
 *
 ************************************************/
-Bright * Bright_Create(void){
+Bright * Bright_Create(void)
+{
 
     Bright * me = (Bright *) malloc(sizeof(Bright));
 
@@ -88,6 +92,7 @@ Bright * Bright_Create(void){
 ************************************************/
 void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft, bool wind_changed)
 {
+    static uint8_t last_bright = PERCENT_0;
 
     /*
     tft->fillCircle(x_centre, y_centre, rad, ST77XX_RED);
@@ -119,51 +124,53 @@ void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft, bool wind_c
         tft->println("M");
     }
 
-    tft->fillRoundRect(110, 10, 30, 110, 13, ST77XX_WHITE);
+    
 
 
 
-    switch (me->bright_percent)
+    if (me->bright_percent != last_bright)
     {
-        case PERCENT_0:
+        tft->fillRoundRect(110, 10, 30, 110, 13, ST77XX_WHITE);
+        switch (me->bright_percent)
+        {
+            case PERCENT_0:
+                break;
+            
+            case PERCENT_12_5:
+                tft->fillRoundRect(110, 97, 30, 17, 10, ST77XX_BLACK);
+                break;
 
-            break;
-        
-        case PERCENT_12_5:
-            tft->fillRoundRect(110, 97, 30, 17, 10, ST77XX_BLACK);
-            break;
+            case PERCENT_25:
+                tft->fillRoundRect(110, 89, 30, 25, 10, ST77XX_BLACK);
+                break;
 
-        case PERCENT_25:
-            tft->fillRoundRect(110, 89, 30, 25, 10, ST77XX_BLACK);
-            break;
+            case PERCENT_37_5:
+                tft->fillRoundRect(110, 77, 30, 37, 10, ST77XX_BLACK);
+                break;
 
-        case PERCENT_37_5:
-            tft->fillRoundRect(110, 77, 30, 37, 10, ST77XX_BLACK);
-            break;
+            case PERCENT_50:
+                tft->fillRoundRect(110, 64, 30, 50, 10, ST77XX_BLACK);
+                break;
 
-        case PERCENT_50:
-            tft->fillRoundRect(110, 64, 30, 50, 10, ST77XX_BLACK);
-            break;
+            case PERCENT_62_5:
+                tft->fillRoundRect(110, 52, 30, 62, 10, ST77XX_BLACK);
+                break;
 
-        case PERCENT_62_5:
-            tft->fillRoundRect(110, 52, 30, 62, 10, ST77XX_BLACK);
-            break;
+            case PERCENT_75:
+                tft->fillRoundRect(110, 39, 30, 75, 10, ST77XX_BLACK);
+                break;
 
-        case PERCENT_75:
-            tft->fillRoundRect(110, 39, 30, 75, 10, ST77XX_BLACK);
-            break;
+            case PERCENT_87_5:
+                tft->fillRoundRect(110, 27, 30, 87, 10, ST77XX_BLACK);
+                break;
 
-        case PERCENT_87_5:
-
-            tft->fillRoundRect(110, 27, 30, 87, 10, ST77XX_BLACK);
-            break;
-
-        case PERCENT_100:
-
-            tft->fillRoundRect(110, 14, 30, 100, 10, ST77XX_BLACK);
-            break;
-        
+            case PERCENT_100:
+                tft->fillRoundRect(110, 14, 30, 100, 10, ST77XX_BLACK);
+                break;
+            
+        }
     }
+    last_bright = me->bright_percent;
     
 }
 
@@ -175,7 +182,8 @@ void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft, bool wind_c
 * @Return: -
 *
 ************************************************/
-void Motor_Bright_Control(Bright *me, bool up_pressed, bool low_pressed, bool center_pressed, bool wind_changed, Adafruit_ST7735 *tft){
+void Motor_Bright_Control(Bright *me, bool up_pressed, bool low_pressed, bool center_pressed, bool wind_changed, Adafruit_ST7735 *tft)
+{
     uint8_t aux_bright_changed = false;
     uint8_t last_percent;
     if (me->automatic)
@@ -186,7 +194,9 @@ void Motor_Bright_Control(Bright *me, bool up_pressed, bool low_pressed, bool ce
             me->automatic = false;
         }
 
-    }else{
+    }
+    else
+    {
         //Manual bright
         if (up_pressed)
         {
@@ -220,7 +230,8 @@ void Motor_Bright_Control(Bright *me, bool up_pressed, bool low_pressed, bool ce
 
     if (wind_changed || center_pressed || low_pressed || up_pressed) Actualize_Window_Bright(me, tft, wind_changed);
 
-    if (last_percent != me->bright_percent){
+    if (last_percent != me->bright_percent)
+    {
         me->changed = true;
     }else{
         me->changed = false;

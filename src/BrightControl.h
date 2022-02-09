@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <Adafruit_GFX.h>    // Core graphics library
+#include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 
 #define PERCENT_0 0
 #define PERCENT_12_5 1

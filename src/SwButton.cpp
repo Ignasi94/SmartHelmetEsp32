@@ -11,6 +11,7 @@
 *
 ************************************************/
 Button * Button_Create(unsigned char pin){
+    
     Button * but = (Button *) malloc(sizeof(Button));
     but->Gpio_pin = pin;
     //but->Handle_Timer = TiGetTimer();
@@ -21,7 +22,6 @@ Button * Button_Create(unsigned char pin){
     TiResetTics(but->timerButton);
 
     return but;
-
 }
 
 
