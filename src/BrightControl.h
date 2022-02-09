@@ -47,7 +47,7 @@ Bright * Bright_Create(void);
 * @Return: -
 *
 ************************************************/
-void Motor_Bright_Control(Bright * me, bool up_pressed, bool low_pressed, bool center_pressed);
+void Motor_Bright_Control(Bright * me, bool up_pressed, bool low_pressed, bool center_pressed, bool wind_changed, Adafruit_ST7735 *tft);
 
 
 

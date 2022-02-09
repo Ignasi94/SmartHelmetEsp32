@@ -1,4 +1,9 @@
+#include <Adafruit_GFX.h>    // Core graphics library
+#include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
+//#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
+#include <SPI.h>
 #include "BrightControl.h"
+
 
 
 
@@ -76,12 +81,44 @@ Bright * Bright_Create(void){
 
 /***********************************************
 *
+* @Finality: Function that actualize the screen from the bright configuration
+* @Parameters: -
+* @Return: -
+*
+************************************************/
+void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft)
+{
+    //Clear screen
+    tft->fillScreen(ST77XX_WHITE);
+    /*
+    tft->fillCircle(x_centre, y_centre, rad, ST77XX_RED);
+    tft->fillCircle(x_centre, y_centre, rad - thick, ST77XX_WHITE);
+    */
+    tft->fillCircle(50, 50, 10, ST77XX_RED);
+    tft->fillCircle(50, 50, 10 - 2, ST77XX_WHITE);
+    //Set text cursor
+    tft->setCursor(50, 10);
+    //Set text color
+    tft->setTextColor(ST77XX_BLACK);
+    //Set text size
+    tft->setTextSize(3);
+    if (me->automatic){
+        tft->println("A");
+    }else{
+        tft->println("M");
+    }
+    //Print "A" that means automátic
+}
+
+
+/***********************************************
+*
 * @Finality: Motor with the logic of the bright configuration.
 * @Parameters: The object of the Bright class
 * @Return: -
 *
 ************************************************/
-void Motor_Bright_Control(Bright * me, bool up_pressed, bool low_pressed, bool center_pressed){
+void Motor_Bright_Control(Bright *me, bool up_pressed, bool low_pressed, bool center_pressed, bool wind_changed, Adafruit_ST7735 *tft){
     uint8_t aux_bright_changed = false;
     uint8_t last_percent;
     if (me->automatic)
@@ -123,6 +160,8 @@ void Motor_Bright_Control(Bright * me, bool up_pressed, bool low_pressed, bool c
         }
 
     }
+
+    if (wind_changed || center_pressed || low_pressed || up_pressed) Actualize_Window_Bright(me, tft);
 
     if (last_percent != me->bright_percent){
         me->changed = true;

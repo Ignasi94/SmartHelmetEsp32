@@ -58,11 +58,13 @@
 //bUTTONS INIT
 Button * but_up, *but_low, *but_left, *but_right, *but_center;
 Window * window;
+bool windows_changed = false;
 Bright * bright;
+
+
 
 //Timer variables
 static unsigned char TimerTeclat;
-
 volatile unsigned long elapsedTimeInMicroseconds = 0;
 int firstBLEWrite = 0, firstBLENameStreet = 0, firstSpeedLim = 0;
 //int last_has_2_lines = 0;
@@ -534,8 +536,10 @@ void loop() {
   }
   */
 
+  windows_changed = Motor_WINDOW_SELECT(window, Motor_Button(but_left), Motor_Button(but_right));
 
-  if (Motor_WINDOW_SELECT(window, Motor_Button(but_left), Motor_Button(but_right))){
+  if (windows_changed){
+
     Serial.println("Window changed...");
     switch (window->status_machine)
     {
@@ -545,11 +549,6 @@ void loop() {
 
       case WINDOW_BRIGHT:
           Serial.println("Window bright...");
-          Motor_Bright_Control(bright, Motor_Button(but_up), Motor_Button(but_low), Motor_Button(but_center));
-          if(bright->changed){
-            Serial.println("Bright changed... :");
-            Serial.println(bright->bright_percent);
-          }
           break;
 
       case WINDOW_DISPLAY:
@@ -559,11 +558,43 @@ void loop() {
       case WINDOW_VOLUMEN:
           Serial.println("Window volumen...");
           break;
+          
       default:
           break;
     }
-    
   }
+  switch (window->status_machine)
+  {
+    case WINDOW_NAVIGATION:
+        //Serial.println("Window navigation...");
+        break;
+
+    case WINDOW_BRIGHT:
+        
+
+        Motor_Bright_Control(bright, Motor_Button(but_up), Motor_Button(but_low), Motor_Button(but_center), windows_changed, &tft);
+
+
+        
+        /*
+        Serial.println("Bright changed... :");
+        Serial.println(bright->bright_percent);
+        */
+        
+        break;
+
+    case WINDOW_DISPLAY:
+        //Serial.println("Window display...");
+        break;
+    
+    case WINDOW_VOLUMEN:
+        //Serial.println("Window volumen...");
+        break;
+    default:
+        break;
+  }
+
+
 
   /*
   if (digitalRead(BUTTON_UP) != LOW){
