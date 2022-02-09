@@ -5,6 +5,8 @@
 
 #include "BrightControl.h"
 
+#define PIN_PWM 2
+
 typedef struct {
 
     //Pin OUT of the esp32

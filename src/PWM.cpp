@@ -14,6 +14,7 @@
 PWM * PWM_Create(unsigned char pin)
 {
     PWM * pwm = (PWM *) malloc(sizeof(PWM));
+    pinMode(pin, OUTPUT);
     pwm->Gpio_pin = pin;
     //but->Handle_Timer = TiGetTimer();
     pwm->status_machine = 0;

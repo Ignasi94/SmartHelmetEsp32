@@ -34,6 +34,7 @@
 #include "SwButton.h"
 #include "Windows.h"
 #include "BrightControl.h"
+#include "PWM.h"
 
 //Defines of UUID's BLE
 // See the following for generating UUIDs:
@@ -60,6 +61,7 @@ Button * but_up, *but_low, *but_left, *but_right, *but_center;
 Window * window;
 bool windows_changed = false;
 Bright * bright;
+PWM * pwm;
 
 
 
@@ -418,6 +420,9 @@ void setup() {
   //Bright Control create
   bright = Bright_Create();
 
+  //PWM create
+  pwm = PWM_Create(PIN_PWM);
+
     
     
     //TEST ZONE
@@ -593,6 +598,8 @@ void loop() {
     default:
         break;
   }
+
+  //Motor_PWM(pwm, *bright);
 
 
 
