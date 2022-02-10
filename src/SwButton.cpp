@@ -47,7 +47,7 @@ bool Motor_Button(Button * me){
             break;
 
         case 1:
-            if(TiGetTics(me->timerButton) > 20){
+            if(TiGetTics(me->timerButton) > 40){
                 if (digitalRead(me->Gpio_pin) != LOW){
                     me->status_machine = 2;
                 }else{
@@ -66,7 +66,7 @@ bool Motor_Button(Button * me){
         
         case 3: 
         
-            if(TiGetTics(me->timerButton) > 20){
+            if(TiGetTics(me->timerButton) > 40){
                 if (digitalRead(me->Gpio_pin) == LOW){
                     me->status_machine = 4;
                 }

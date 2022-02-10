@@ -540,8 +540,20 @@ void loop() {
     Serial.println("CENTER pressed...");
   }
   */
+/*
+  bool b_up
+  bool b_low
+  bool b_left
+  bool b_right
+  bool b_center*/
+  bool b_up = Motor_Button(but_up);
+  bool b_low = Motor_Button(but_low);
+  bool b_left = Motor_Button(but_left);
+  bool b_right = Motor_Button(but_right);
+  bool b_center = Motor_Button(but_center);
+  
 
-  windows_changed = Motor_WINDOW_SELECT(window, Motor_Button(but_left), Motor_Button(but_right));
+  windows_changed = Motor_WINDOW_SELECT(window, b_left, b_right);
 
   if (windows_changed){
 
@@ -549,19 +561,19 @@ void loop() {
     switch (window->status_machine)
     {
       case WINDOW_NAVIGATION:
-          Serial.println("Window navigation...");
+          //Serial.println("Window navigation...");
           break;
 
       case WINDOW_BRIGHT:
-          Serial.println("Window bright...");
+          //Serial.println("Window bright...");
           break;
 
       case WINDOW_DISPLAY:
-          Serial.println("Window display...");
+          //Serial.println("Window display...");
           break;
       
       case WINDOW_VOLUMEN:
-          Serial.println("Window volumen...");
+          //Serial.println("Window volumen...");
           break;
           
       default:
@@ -577,7 +589,7 @@ void loop() {
     case WINDOW_BRIGHT:
         
 
-        Motor_Bright_Control(bright, Motor_Button(but_up), Motor_Button(but_low), Motor_Button(but_center), windows_changed, &tft);
+        Motor_Bright_Control(bright, b_up, b_low, b_center, windows_changed, &tft);
 
 
         
@@ -599,7 +611,9 @@ void loop() {
         break;
   }
 
-  //Motor_PWM(pwm, *bright);
+  //pinMode(27, OUTPUT);
+  //digitalWrite(27, HIGH);
+  Motor_PWM(pwm, *bright);
 
 
 

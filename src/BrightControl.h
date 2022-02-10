@@ -9,14 +9,16 @@
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 
 #define PERCENT_0 0
-#define PERCENT_12_5 1
-#define PERCENT_25 2
-#define PERCENT_37_5 3
-#define PERCENT_50 4
-#define PERCENT_62_5 5
+
+#define PERCENT_25 1
+#define PERCENT_50 2
+#define PERCENT_75 3
+
+/*#define PERCENT_62_5 5
 #define PERCENT_75 6
-#define PERCENT_87_5 7
-#define PERCENT_100  8
+#define PERCENT_87_5 5*/
+
+#define PERCENT_100 4
 
 
 

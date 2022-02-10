@@ -103,8 +103,8 @@ void TiInit () {
     //by edge = true
     timerAttachInterrupt(timer, &onTimer, true);
 
-    //Program interrupt with the timer every 1000 * 1usg = 1msg
-    timerAlarmWrite(timer, 1000, true);
+    //Program interrupt with the timer every 1000 * 1usg = 1 msg
+    timerAlarmWrite(timer, 500, true);
     timerAlarmEnable(timer);
     // Suposo que anem a 4MHz
     /*T0CONbits.T08BIT = 0; // 16 bits

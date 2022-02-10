@@ -5,7 +5,7 @@
 
 #include "BrightControl.h"
 
-#define PIN_PWM 2
+#define PIN_PWM 27
 
 typedef struct {
 

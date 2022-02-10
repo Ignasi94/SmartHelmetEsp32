@@ -10,7 +10,7 @@
 // Si anem justos de memoria, aquest define indica el
 // nombre de timers d'aquest TAD i es pot modificar sense
 // problemes.
-#define         TI_NUMTIMERS                    2
+#define         TI_NUMTIMERS                    6
 #define         TI_MAXTICS                      30000
 
 //void RSI_Timer0(void);
