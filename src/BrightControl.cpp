@@ -104,6 +104,10 @@ void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft, bool wind_c
         //Clear screen
         tft->fillScreen(ST77XX_WHITE);
         tft->fillCircle(50, 65, 30, ST77XX_BLACK);
+        tft->setCursor(10, 10);
+        tft->setTextSize(2);
+        tft->println("Bright Configuration");
+        
     }
     tft->fillCircle(50, 65, 30 - 4, ST77XX_WHITE);
     //Set text cursor

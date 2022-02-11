@@ -81,7 +81,5 @@ void Motor_PWM(PWM * me, Bright bright)
 
         default:
             break;
-    }//*/
-
-
+    }
 }
