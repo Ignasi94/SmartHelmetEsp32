@@ -100,30 +100,3 @@ void Button_Destroy(Button* const me){
     free(me);
 
 }
-
-
-
-/***********************************************
-*
-* @Finality: Create the object
-* @Parameters: -
-* @Return: Return object created and initialized
-*
-************************************************/
-/*
-Icm * ICM_Create(void){
-    Icm * this = (Icm *) malloc(sizeof(Icm));
- 
-    I2CInit();
-	ExtIntInit();
-
-    if(this!=NULL)
-    {
-    
-        ICM_Init(this);
-    
-    }
-    
-    return this;
-
-}*/

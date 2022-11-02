@@ -1,20 +1,3 @@
-/*
-    Simple sketch to control a led with BLE protocol by
-    Daniel Carrasco (https://www.electrosoftcloud.com)
-*/
-/*
-   #define ST77XX_BLACK 0x0000
-  #define ST77XX_WHITE 0xFFFF
-  #define ST77XX_RED 0xF800
-  #define ST77XX_GREEN 0x07E0
-  #define ST77XX_BLUE 0x001F
-  #define ST77XX_CYAN 0x07FF
-  #define ST77XX_MAGENTA 0xF81F
-  #define ST77XX_YELLOW 0xFFE0
-  #define ST77XX_ORANGE 0xFC00*/
-
-//#include <Arduino.h>
-
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
@@ -35,12 +18,16 @@
 #include "SwButton.h"
 #include "Windows.h"
 #include "BrightControl.h"
+#include "DisplayControl.h"
 #include "PWM.h"
 
 //Defines of UUID's BLE
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
+
 #define SERVICE_UUID        "3feb1e8a-3981-4045-ad39-b225135013a0"
+
+
 #define MANEUVER_CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define SPEED_CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a9"
 #define STREET_CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a7"
@@ -62,12 +49,11 @@ Button * but_up, *but_low, *but_left, *but_right, *but_center;
 Window * window;
 bool windows_changed = false;
 Bright * bright;
+Display * display;
 PWM * pwm;
 
 
 
-//Timer variables
-static unsigned char TimerTeclat;
 volatile unsigned long elapsedTimeInMicroseconds = 0;
 int firstBLEWrite = 0, firstBLENameStreet = 0, firstSpeedLim = 0;
 //int last_has_2_lines = 0;
@@ -254,30 +240,16 @@ void i2sConfig(){
 void blClassicSetup(){
   i2sPinConfig();
   i2sConfig();
-  
-
 }
 
 void setup() {
   
-    /*come_from_disconnect_speed_limiter = 1;
-    clear_remain_meters = 1;
-    firstBLEWrite = 0;
-    firstSpeedLim = 0;
-    clean_text_name_of_street = 1;
-    come_from_disconnect_speed_limiter = 1;
-    clear_remain_meters = 1;
-    BLEDevice::startAdvertising();
-    tft.fillScreen(ST77XX_WHITE);
-    firstBLEWrite = 0;
-    firstSpeedLim = 0;*/
+
   /*
      Serial setup
   */
   Serial.begin(115200);
   Serial.println("Starting BLE!");
-  //Serial.println("Initializing device");
-
 
 
   /*
@@ -293,10 +265,8 @@ void setup() {
 
   time = millis() - time;
 
-  //Serial.println(time, DEC);
   delay(500);
 
-  //printIcon(55, 39);
   tft.fillScreen(ST77XX_WHITE);
   //Print waiting ble icon in the midle of the screen
   printIcon(0, 0, 30, 14, &tft);
@@ -323,55 +293,52 @@ void setup() {
      BLE SETUP
   */
 
-  BLEDevice::init("SmartHelmet"); // Initializing the device with its name
-  Serial.println("Creating server");
-  BLEServer *pServer = BLEDevice::createServer(); // Create the server
-  Serial.println("Adding service UUID");
-  BLEService *pService = pServer->createService(SERVICE_UUID); // Creating a new service into server
-  // Adding a characteristic maneuver with the object name (official UUID), without object (this characteristic will not change)
-  Serial.println("Adding name characteristic");
+  // Initializing the device with its name
+  BLEDevice::init("SmartHelmet"); 
 
+  // Create the Server
+  BLEServer *pServer = BLEDevice::createServer(); 
+
+  // Adding a service with his UUID into Server
+  BLEService *pService = pServer->createService(SERVICE_UUID); 
+  
+  // Creating a characteristic with an UUID and name "SHelmet"
   BLECharacteristic *nameCharacteristic = pService->createCharacteristic(
       BLEUUID((uint16_t)0x2A00),
-      BLECharacteristic::PROPERTY_READ
-                                          );
-  nameCharacteristic->setValue("id");
+      BLECharacteristic::PROPERTY_READ);
+                                          
+  nameCharacteristic->setValue("SHelmet");
 
-
-  // Adding a characteristic maneuver
-  //Serial.println("Adding char");
+  // Adding the characteristic of maneuver
   pService->addCharacteristic(&maneuverCharacteristic);
-  maneuverCharacteristic.setValue("0"); // Value uint8_t with length 1
-  //maneuverCharacteristic.setCallbacks(new NextManeuverIdCallback());
+  maneuverCharacteristic.setValue("0"); 
 
-
-  // Adding a characteristic speed
-  //Serial.println("Adding control char");
+  // Adding a characteristic of speed
   pService->addCharacteristic(&speedCharacteristic);
-  speedCharacteristic.setValue("0"); // Value uint8_t with length 1
+  speedCharacteristic.setValue("0"); 
 
-
-  // Adding a characteristic name of street
-  //Serial.println("Adding control characteristic");
+  // Adding a characteristic of name of street
   pService->addCharacteristic(&streetCharacteristic);
-  streetCharacteristic.setValue("0"); // Value uint8_t with length 1
-  //streetCharacteristic.setCallbacks(new NextStreetCallback());
+  streetCharacteristic.setValue("0"); 
 
-  // Adding a characteristic name of street
-  //Serial.println("Adding control characteristic");
+  // Adding a characteristic remaining distance
   pService->addCharacteristic(&distanceCharacteristic);
   distanceCharacteristic.setValue("0"); // Value uint8_t with length 1
   //streetCharacteristic.setCallbacks(new distanceRemainingCallback());
 
-
+  // Setting Characteristic's Callbacks
   speedCharacteristic.setCallbacks(new NextSpeedCallback());
   maneuverCharacteristic.setCallbacks(new NextManeuverIdCallback());
   streetCharacteristic.setCallbacks(new NextStreetCallback());
   distanceCharacteristic.setCallbacks(new distanceRemainingCallback());
 
+  // Setting Server Callbacks
   pServer->setCallbacks(new ServerCallbacks());
-  Serial.println("Starting...");
+
+  // Starting Server
   pService->start();
+
+
   Serial.println("Creating advertising");
   // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
@@ -380,9 +347,6 @@ void setup() {
   pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
   pAdvertising->setMinPreferred(0x12);
   BLEDevice::startAdvertising();
-
-  /*delay(3000);
-  a2dp_sink.start("SmartHelmetA2dp");*/
 
   Serial.println("Char defined! Now you can read it in your phone!");
   pinMode (LED, OUTPUT); // Set the LED pin as OUTPUT
@@ -396,14 +360,8 @@ void setup() {
 
   pinMode (32, OUTPUT); // Set the LED pin as OUTPUT
 
-
-
   //Timer init
   TiInit();
-  //TimerTeclat = TiGetTimer();
-  //TiResetTics(TimerTeclat);
-
-
 
   //BUTTONS CREATE
   
@@ -413,140 +371,22 @@ void setup() {
   but_right = Button_Create(BUTTON_RIGHT);
   but_center = Button_Create(BUTTON_CENTER);
 
-
   //Windows create
   window = WINDOW_Create();
-    
     
   //Bright Control create
   bright = Bright_Create();
 
+  //Display Control create
+  display = Display_Create();
+
   //PWM create
   pwm = PWM_Create(PIN_PWM);
-
-    
-    
-    //TEST ZONE
-
-    //Test of setspeedlimitcircle
-    /*tft.fillScreen(ST77XX_WHITE);
-      setSpeedLimitCircle(120, 35, 6, 32, 50);
-
-
-
-
-    //Test of setNameStreet
-    setNameStreet((char *)("AAAAABBBBBCCCCCAAAAAAAAAA "), 5, 110);
-    delay(2000);
-    setNameStreet((char *)("xxxxxxxxxxxxxxxxxxxxxxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxxxxxxxxxxxxxxx"), 5, 110);
-    delay(2000);
-    setNameStreet((char *)("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"), 5, 110);
-    delay(2000);
-
-    //Test of setNameStreet
-    setNameStreet((char *)("AAAAABBBBBCCCCCAAAAAAAAAA BBBBCCC"), 5, 110);
-    delay(2000);
-    setNameStreet((char *)("xxxxxxxxxxxxxxxxxxxx"), 5, 110);
-    delay(2000);
-    setNameStreet((char *)("ZZZZZZZ"), 5, 110);
-    tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 17, 0, 0, &tft);
-    delay(500);
-
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 11, 0, 0, &tft);
-    delay(500);
-
-    tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 58, 0, 0, &tft);
-    delay(500);
-
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 61, 0, 0, &tft);
-    delay(500);
-
-    printIcon(1, 17, 0, 0, &tft);
-    delay(500);
-
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 11, 0, 0, &tft);
-    delay(500);
-
-    tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 58, 0, 0, &tft);
-    delay(500);
-
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 61, 0, 0, &tft);
-    delay(500);
-
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(1, 17, 0, 0, &tft);
-    delay(500);
-
-    tft.fillScreen(ST77XX_WHITE);
-    printIcon(3, 58, 0, 0, &tft);
-    delay(500);
-    
-    tft.fillScreen(ST77XX_WHITE);
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(4, 61, 0, 0, &tft);
-    delay(500);
-
-    tft.fillScreen(ST77XX_WHITE);
-    //tft.fillScreen(ST77XX_WHITE);
-    printIcon(5, 17, 0, 0, &tft);
-    delay(500);
-
-    tft.fillScreen(ST77XX_WHITE);     //tft.fillScreen(ST77XX_WHITE);
-    printIcon(6, 1, 0, 0, &tft);
-    delay(500);*/
-
-
-    //tft.fillScreen(ST77XX_WHITE);
-    /*tft.drawBitmap(0, 0, image_data_direction_continue_uturn, 100, 100, 0x0000, 0xffff);
-    delay(2000);
-    
-    //tft.fillScreen(ST77XX_WHITE);
-    tft.drawBitmap(0, 0, image_data_direction_arrive_right, 100, 100, 0x0000, 0xffff);
-    delay(2000);
-
-    //tft.fillScreen(ST77XX_WHITE);
-    tft.drawBitmap(0, 0, image_data_direction_continue_uturn, 100, 100, 0x0000, 0xffff);
-    delay(2000);
-    
-    //tft.fillScreen(ST77XX_WHITE);
-    tft.drawBitmap(0, 0, image_data_direction_arrive_right, 100, 100, 0x0000, 0xffff);
-    delay(2000);*/
-    //drawBitmap();   
+  
 }
 
 void loop() {
-  /*
-  if (Motor_Button(but_up)){
-    Serial.println("UP pressed...");
-  }
 
-  
-  if (Motor_Button(but_left)){
-    Serial.println("LEFT pressed...");
-  }
-  if (Motor_Button(but_right)){
-    Serial.println("RIGHT pressed...");
-  }
-  if (Motor_Button(but_low)){
-    Serial.println("LOW pressed...");
-  }
-  if (Motor_Button(but_center)){
-    Serial.println("CENTER pressed...");
-  }
-  */
-/*
-  bool b_up
-  bool b_low
-  bool b_left
-  bool b_right
-  bool b_center*/
   bool b_up = Motor_Button(but_up);
   bool b_low = Motor_Button(but_low);
   bool b_left = Motor_Button(but_left);
@@ -556,31 +396,6 @@ void loop() {
 
   windows_changed = Motor_WINDOW_SELECT(window, b_left, b_right);
 
-  if (windows_changed){
-
-    Serial.println("Window changed...");
-    switch (window->status_machine)
-    {
-      case WINDOW_NAVIGATION:
-          //Serial.println("Window navigation...");
-          break;
-
-      case WINDOW_BRIGHT:
-          //Serial.println("Window bright...");
-          break;
-
-      case WINDOW_DISPLAY:
-          //Serial.println("Window display...");
-          break;
-      
-      case WINDOW_VOLUMEN:
-          //Serial.println("Window volumen...");
-          break;
-          
-      default:
-          break;
-    }
-  }
   switch (window->status_machine)
   {
     case WINDOW_NAVIGATION:
@@ -588,20 +403,11 @@ void loop() {
         break;
 
     case WINDOW_BRIGHT:
-        
-
         Motor_Bright_Control(bright, b_up, b_low, b_center, windows_changed, &tft);
-
-
-        
-        /*
-        Serial.println("Bright changed... :");
-        Serial.println(bright->bright_percent);
-        */
-        
         break;
 
     case WINDOW_DISPLAY:
+        Motor_Display_Control(display, b_up, b_low, b_center, windows_changed, &tft);
         //Serial.println("Window display...");
         break;
     
@@ -611,41 +417,7 @@ void loop() {
     default:
         break;
   }
-
-  //pinMode(27, OUTPUT);
-  //digitalWrite(27, HIGH);
   Motor_PWM(pwm, *bright);
-
-
-
-  /*
-  if (digitalRead(BUTTON_UP) != LOW){
-    Serial.println("UP pressed...");
-  }
-  if (digitalRead(BUTTON_LEFT) != LOW){
-    Serial.println("LEFT pressed...");
-  }
-  if (digitalRead(BUTTON_RIGHT) != LOW){
-    Serial.println("RIGHT pressed...");
-  }
-  if (digitalRead(BUTTON_LOW) != LOW){
-    Serial.println("LOW pressed...");
-  }
-  if (digitalRead(BUTTON_CENTER) != LOW){
-    Serial.println("CENTER pressed...");
-  }*/
-
-
-
-  /*if(but_up->status_machine == 1){
-    Serial.println("Status 1...");
-  }
-  if(but_up->status_machine == 2){
-    Serial.println("Status 2...");
-  }
-  if(digitalRead(BUTTON_UP) != LOW){
-    //Serial.println("up jeje...");
-  }*/
 }
 
 

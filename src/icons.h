@@ -6,7 +6,9 @@
 #define SIZE_OF_ICON 8100
 
 void printIcon(int col_offset, int fil_offset, Adafruit_ST7735 *tft);
+
 void printIcon(int type_of_icon, int id_of_icon, int col_offset, int fil_offset, Adafruit_ST7735 *tft);
+
 void writeInLCDRam(int col_offset, int fil_offset, const uint8_t (&icon)[SIZE_OF_ICON], Adafruit_ST7735 *tft);
 
 											static const uint8_t image_data_direction_arrive[SIZE_OF_ICON] = {

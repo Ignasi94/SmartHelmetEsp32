@@ -13,11 +13,6 @@
 #define PERCENT_25 1
 #define PERCENT_50 2
 #define PERCENT_75 3
-
-/*#define PERCENT_62_5 5
-#define PERCENT_75 6
-#define PERCENT_87_5 5*/
-
 #define PERCENT_100 4
 
 
@@ -47,7 +42,12 @@ Bright * Bright_Create(void);
 /***********************************************
 *
 * @Finality: Motor with the logic of the bright configuration.
-* @Parameters: The object of the Bright class
+* @Parameters: me, of  Bright class
+* @Parameters: up_pressed, boolean up button pressed
+* @Parameters: low_pressed, boolean low button pressed
+* @Parameters: center_pressed, boolean center button pressed
+* @Parameters: wind_changed
+* @Parameters: tft, from class Adafruit_ST7735
 * @Return: -
 *
 ************************************************/

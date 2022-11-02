@@ -1,6 +1,5 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
-//#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <SPI.h>
 #include "BrightControl.h"
 
@@ -105,8 +104,8 @@ void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft, bool wind_c
         tft->fillScreen(ST77XX_WHITE);
         tft->fillCircle(50, 65, 30, ST77XX_BLACK);
         tft->setCursor(10, 10);
-        tft->setTextSize(2);
-        tft->println("Bright Configuration");
+        tft->setTextSize(1);
+        tft->println("Bright Config");
         
     }
     tft->fillCircle(50, 65, 30 - 4, ST77XX_WHITE);
@@ -140,33 +139,17 @@ void Actualize_Window_Bright(Bright* const me, Adafruit_ST7735 *tft, bool wind_c
             case PERCENT_0:
                 break;
             
-            /*case PERCENT_12_5:
-                tft->fillRoundRect(110, 97, 30, 17, 10, ST77XX_BLACK);
-                break;*/
-
             case PERCENT_25:
                 tft->fillRoundRect(110, 89, 30, 25, 10, ST77XX_BLACK);
                 break;
-
-           /* case PERCENT_37_5:
-                tft->fillRoundRect(110, 77, 30, 37, 10, ST77XX_BLACK);
-                break;*/
 
             case PERCENT_50:
                 tft->fillRoundRect(110, 64, 30, 50, 10, ST77XX_BLACK);
                 break;
 
-           /* case PERCENT_62_5:
-                tft->fillRoundRect(110, 52, 30, 62, 10, ST77XX_BLACK);
-                break;*/
-
             case PERCENT_75:
                 tft->fillRoundRect(110, 39, 30, 75, 10, ST77XX_BLACK);
                 break;
-
-            /*case PERCENT_87_5:
-                tft->fillRoundRect(110, 27, 30, 87, 10, ST77XX_BLACK);
-                break;*/
 
             case PERCENT_100:
                 tft->fillRoundRect(110, 14, 30, 100, 10, ST77XX_BLACK);

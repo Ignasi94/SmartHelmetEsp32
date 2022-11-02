@@ -26,26 +26,7 @@ static uint8_t counter;
 //volatile uint32_t interruptCounter;
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
-/*
-void RSI_Timer0 (void) { 
-//	IO_SetValue(GPIO_1, 1); // Per comprovar la temportitzaci�
-    	INTCONbits.TMR0IF = 0;    //Resetejo el flag de petici� d'interrupcio
-        TMR0H = 64920>>8;
-	TMR0L = 64920&0xFF;
-	h_Tics++;
 
-	if (h_Tics >= TI_MAXTICS) {
-		// Abans que dongui la volta, tots avall.
-		for (counter=0;counter<TI_NUMTIMERS;counter++){
-            if (s_Timers[counter].b_busy==TI_CERT){
-                s_Timers[counter].h_TicsInicials -= h_Tics;
-                h_Tics=0;
-            }
-        }
-	}
-//	IO_SetValue(GPIO_1, 0); // Per comprovar la temportitzaci�
-}
-*/
 
 /*
  *As with any interrupt, it is best to place the code executed by the Timer in the internal RAM of the ESP32
@@ -58,13 +39,6 @@ void RSI_Timer0 (void) {
 void IRAM_ATTR  onTimer(){
     static uint8_t bool_test = 0;
 
-    /*if (bool_test == 0){
-        bool_test = 1;
-        digitalWrite(32, HIGH);
-    }else{
-        bool_test = 0;
-        digitalWrite(32, LOW);
-    }*/
     // Increment the counter and set the time of ISR
     portENTER_CRITICAL_ISR(&timerMux);
     h_Tics++;
@@ -106,18 +80,6 @@ void TiInit () {
     //Program interrupt with the timer every 1000 * 1usg = 1 msg
     timerAlarmWrite(timer, 500, true);
     timerAlarmEnable(timer);
-    // Suposo que anem a 4MHz
-    /*T0CONbits.T08BIT = 0; // 16 bits
-    T0CONbits.T0CS = 0; // Clock: fosc/4
-    T0CONbits.PSA = 0;  // Prescaler
-    T0CONbits.T0PS = 0; // Preescaler a 1/4, pols de 4us
-    // La resta de valors de T1CON per defecte
-    TMR0H = 64920>>8;
-    TMR0L = 64920&0xFF;	// (256-6)T * 4us = 1ms 100micros 
-    T0CONbits.TMR0ON = 1;		// Activo el timer
-    // Activo la interrupci� del timer 1
-    INTCONbits.TMR0IF = 0;
-    INTCONbits.TMR0IE = 1;*/
 }
 
 char TiGetTimer() {
