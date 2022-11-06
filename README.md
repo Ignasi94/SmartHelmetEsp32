@@ -86,15 +86,11 @@ Embeeded software of the smarthelmet prototype that connects to the android appl
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
-
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
+Comfort equipment and technology in the world of two-wheel motoring is an entire field that drivers increasingly request. The demands of users and the market require the automotive sector to make more significant efforts in the search for a safer and more comfortable driving experience.
+In the motorcycle sector, there are already "smart" helmets that make driving easier for motorcyclists, but these are not very accessible due to their high price.
+The present project aims to create a functional device suitable for all budgets.
+The proposed tool is the hardware and software of an electronic prototype designed to be integrated into a motorcycle helmet. This prototype will offer multimedia support that will provide the rider with guided route navigation and music control and playback.
+As a result of the project we have designed and implemented the electronics and developed the software of the board and the mobile application in which, through Bluetooth technology, we send route navigation data and multimedia content. This content can be reproduced from peripherals such as the screen and speakers that the microcontroller board will have. Therefore, this project aims to demonstrate that it is possible to create a low-cost device that takes advantage of the power of smartphones in order to provide the motorcycle driver with relevant information about his environment, safety, and well-being during his trip.
 
 Use the `BLANK_README.md` to get started.
 
