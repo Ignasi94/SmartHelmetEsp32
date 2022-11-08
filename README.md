@@ -7,6 +7,7 @@ Embeeded software of the smarthelmet prototype that connects to the android appl
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+![arquitectura](https://user-images.githubusercontent.com/82111867/200658691-b746af8e-e024-4cf7-a595-45a64536eb1d.png)
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 Comfort equipment and technology in the world of two-wheel motoring is an entire field that drivers increasingly request. The demands of users and the market require the automotive sector to make more significant efforts in the search for a safer and more comfortable driving experience.<br /><br />
@@ -15,10 +16,21 @@ The present project aims to create a functional device suitable for all budgets.
 The proposed tool is the hardware and software of an electronic prototype designed to be integrated into a motorcycle helmet. This prototype will offer multimedia support that will provide the rider with guided route navigation and music control and playback.<br /><br />
 As a result of the project we have designed and implemented the electronics and developed the software of the board and the mobile application in which, through Bluetooth technology, we send route navigation data and multimedia content. This content can be reproduced from peripherals such as the screen and speakers that the microcontroller board will have. Therefore, this project aims to demonstrate that it is possible to create a low-cost device that takes advantage of the power of smartphones in order to provide the motorcycle driver with relevant information about his environment, safety, and well-being during his trip.
 
+## Hardware
+
+![aruqitecturabuena](https://user-images.githubusercontent.com/82111867/200657139-8c5161b5-2a94-4547-90a2-ec9855475ef6.png)
 Use the `BLANK_README.md` to get started.
+
+The central engine of the system is an esp32 microcontroller that will be in charge of managing the multimedia information (music and navigation maneuvers) and reproducing it through the speakers and the screen. For music streaming, the device will receive the digital audio signal through an A2DP profile, and this information will be sent through the i2s protocol to a DAC converter that will convert it to an analog signal that will come out through a jack output 3.5mm where we can connect some speakers. As for the display, we will use the SPI protocol to send the information on navigation maneuvers.
+
+In the following box we can see the list of components used:
+
+![table](https://user-images.githubusercontent.com/82111867/200663212-a2881b0d-873a-4ef9-ad61-fbe3e73889ad.png)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+![layout](https://user-images.githubusercontent.com/82111867/200663699-73501ec1-484a-47a9-8bc0-f896bf938fa9.png)
 
 
 ### Built With
